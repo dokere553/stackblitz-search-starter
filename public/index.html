@@ -15,12 +15,25 @@
       padding: 10px;
       width: 250px;
       font-size: 16px;
-    }
-    button {
+    } /* TO ALIGN "Add Student" button to left of search bar */
+    .search-container input[type="text"],
+    .search-container button 
+    {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px; /* ADDS SPACING */
+    } 
+    .search-container button 
+    {
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
-    }
+    } /* ENDS */
+    /*button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }*/
     .results {
       margin-top: 20px;
     }
@@ -29,6 +42,9 @@
 <body>
   <div class="search-container">
     <h1>Search for Students</h1>
+    <!-- ADDING STUDENT BUTTON -->
+    <button onclick="addItem()">Add Student</button>
+    <!-- END -->
     <input type="text" id="searchInput" placeholder="Search by name or category...">
     <button onclick="searchItems()">Search</button>
     <div class="results" id="results"></div>
