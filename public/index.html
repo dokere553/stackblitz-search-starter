@@ -85,8 +85,15 @@
           resultStudents.textContent = `${students.first_name} ${students.last_name} , ${students.degree_program} (${students.degree_classification})`;
           resultsContainer.appendChild(resultStudents);
         });
-      } else {
+      } 
+      // //else if (resultStudents.textContent=="")
+      // {
+      //     resultsContainer.textContent = 'Invalid search data type';
+      // }
+      else 
+      {
         resultsContainer.textContent = 'No results found';
+        
       }
     }
   </script>
