@@ -39,6 +39,17 @@
     .results {
       margin-top: 20px;
     }
+    .error-message{
+      display: none; /* Hidden by default */
+      width: 100%;
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      border: 1px solid #f5c6cb;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -52,6 +63,8 @@
     <!-- END -->
     <input type="text" id="searchInput" placeholder="Search for student...">
     <button onclick="searchItems()">Search</button>
+     <!-- Invaild search notifacation-->
+     <div class="error-message" id="errorMessage">Please enter a valid search value.</div>
     <div class="results" id="results"></div>
   </div>
 
@@ -60,6 +73,14 @@
     {
       const query = document.getElementById('searchInput').value.toLowerCase();
 
+      const errorMessageDiv = document.getElementById('errorMessage');
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+      if (!query || (query && !emailRegex.test(query) && query.length < 3)) {
+        errorMessageDiv.style.display = 'block';  // Show error message for invalid input
+        return; // Exit function if invalid
+      }
+      
       // Fetch the data from the db.json
       fetch('http://localhost:3000/students')
         .then(response => response.json())
