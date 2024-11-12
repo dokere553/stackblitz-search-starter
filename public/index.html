@@ -1,95 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
- 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Search</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/kMVq+a5RL8fXYasA2lE7AulHkMQM7j2PGUbkFLVshOdLwzHHBzROeLb1B/UvF1IKbcNPtHkHnRVqg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     body {
       font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
     }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
     .search-container {
-      display: flex;           
-      align-items: center;     
-      justify-content: center; 
-      margin: 50px auto;
-      max-width: 400px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+      position: relative;
     }
+
     input[type="text"] {
+      padding: 12px;
+      flex: 1;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 50px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      padding-left: 15px;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    .icon-button {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .error-message {
+      display: none;
+      margin-top: 10px;
       padding: 10px;
-      width: 250px;
-      font-size: 16px;
-    } /* TO ALIGN "Add Student" button to left of search bar */
-    .search-container input[type="text"],
-    .search-container button 
-    {
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 10px; /* ADDS SPACING */
-    } 
-    .search-container button 
-    {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    } /* ENDS */
-    /*button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }*/
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
     .results {
       margin-top: 20px;
     }
-    .error-message{
-      display: none; /* Hidden by default */
-      width: 100%;
-      background-color: #f8d7da;
-      color: #721c24;
-      padding: 10px;
-      border: 1px solid #f5c6cb;
-      font-size: 14px;
-      text-align: center;
-      margin-top: 10px;
+
+    .result-item {
+      padding: 15px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .result-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Fade-in animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 <body>
-  <div class="search-container">
-    <h1 style="text-align: center;">Search for Students</h1>
-  </div>
+  <div class="container">
+    <h1>Search for Students</h1>
 
-  <div style="text-align: center;">
-    <!-- ADDING STUDENT BUTTON -->
-    <button onclick="addItem()">Add Student</button>
-    <!-- END -->
-    <input type="text" id="searchInput" placeholder="Search for student...">
-    <button onclick="searchItems()">Search</button>
-     <!-- Invaild search notifacation-->
-     <div class="error-message" id="errorMessage">Please enter a valid search value.</div>
+    <div class="search-container">
+      <button class="icon-button" onclick="addItem()">
+        <i class="fas fa-plus"></i> Add Student
+      </button>
+      <input type="text" id="searchInput" placeholder="Search by name, program, or email">
+      <button class="icon-button" onclick="searchItems()">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+
+    <div class="error-message" id="errorMessage">
+      Please enter a valid search value.
+    </div>
+
     <div class="results" id="results"></div>
   </div>
 
   <script>
-    function searchItems() 
-    {
-      const query = document.getElementById('searchInput').value.toLowerCase();
+    // Array of placeholder texts to rotate through
+    const placeholders = ["Search by name", "Search by program", "Search by email"];
+    let placeholderIndex = 0;
+    
+    // Function to update the placeholder text
+    function rotatePlaceholder() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.placeholder = placeholders[placeholderIndex];
+      placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+    }
+    
+    // Rotate placeholder text every 3 seconds
+    setInterval(rotatePlaceholder, 3000);
 
+    function searchItems() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
       const errorMessageDiv = document.getElementById('errorMessage');
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-      if (!query || (query && !emailRegex.test(query) && query.length < 3)) {
-        errorMessageDiv.style.display = 'block';  // Show error message for invalid input
-        return; // Exit function if invalid
+      if (!query || (!emailRegex.test(query) && query.length < 3)) {
+        errorMessageDiv.style.display = 'block';
+        return;
       }
       
-      // Fetch the data from the db.json
+      errorMessageDiv.style.display = 'none';
+
       fetch('http://localhost:3000/students')
         .then(response => response.json())
         .then(data => {
-          const results = data.filter(students => 
-            students.first_name.toLowerCase().includes(query) || 
-            students.last_name.toLowerCase().includes(query) || 
-            students.degree_program.toLowerCase().includes(query) || 
-            students.degree_classification.toLowerCase().includes(query) || students.email.toLowerCase().includes(query)
+          const results = data.filter(student => 
+            student.first_name.toLowerCase().includes(query) || 
+            student.last_name.toLowerCase().includes(query) || 
+            student.degree_program.toLowerCase().includes(query) || 
+            student.degree_classification.toLowerCase().includes(query) || 
+            student.email.toLowerCase().includes(query)
           );
 
           displayResults(results);
@@ -99,19 +189,17 @@
 
     function displayResults(results) {
       const resultsContainer = document.getElementById('results');
-      resultsContainer.innerHTML = ''; // Clear previous results
+      resultsContainer.innerHTML = '';
 
       if (results.length > 0) {
-        results.forEach(students => {
-          const resultStudents = document.createElement('p');
-          resultStudents.textContent = `${students.first_name} ${students.last_name} , ${students.degree_program} (${students.degree_classification}) ${students.email}`;
-          resultsContainer.appendChild(resultStudents);
+        results.forEach(student => {
+          const resultItem = document.createElement('div');
+          resultItem.classList.add('result-item');
+          resultItem.textContent = `${student.first_name} ${student.last_name}, ${student.degree_program} (${student.degree_classification}), ${student.email}`;
+          resultsContainer.appendChild(resultItem);
         });
-      } 
-      else 
-      {
+      } else {
         resultsContainer.textContent = 'No results found';
-        
       }
     }
   </script>
