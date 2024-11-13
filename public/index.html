@@ -161,15 +161,15 @@
 
     function searchItems() {
       const query = document.getElementById('searchInput').value.toLowerCase();
-      const errorMessageDiv = document.getElementById('errorMessage');
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      // const errorMessageDiv = document.getElementById('errorMessage');
+      // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-      if (!query || (!emailRegex.test(query) && query.length < 3)) {
-        errorMessageDiv.style.display = 'block';
-        return;
-      }
+      // if (!query || (!emailRegex.test(query) && query.length < 3)) {
+      //   errorMessageDiv.style.display = 'block';
+      //   return;
+      // }
       
-      errorMessageDiv.style.display = 'none';
+      // errorMessageDiv.style.display = 'none';
 
       fetch('http://localhost:3000/students')
         .then(response => response.json())
