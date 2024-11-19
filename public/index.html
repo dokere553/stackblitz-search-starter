@@ -31,6 +31,7 @@
       font-size: 28px;
       margin-bottom: 20px;
       color: #333;
+
     }
 
     .search-container {
@@ -121,6 +122,31 @@
         transform: translateY(0);
       }
     }
+    /*lu added here*/
+    .recent-searches 
+    {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-height: 100px;
+    overflow-y: auto;
+    z-index: 1000;
+    }
+  .recent-searches div 
+  {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .recent-searches div:hover 
+  {
+    background-color: #f0f0f0;
+  }
   </style>
 </head>
 <body>
@@ -131,12 +157,14 @@
       <button class="icon-button" onclick="addItem()">
         <i class="fas fa-plus"></i> Add Student
       </button>
-      <input type="text" id="searchInput" placeholder="Search by name, program, or email">
+      <!-- Lu added an onfocus down there -->
+      <input type="text" id="searchInput" placeholder="Search by name, program, or email" onfocus="showRecentSearches()">
       <button class="icon-button" onclick="searchItems()">
         <i class="fas fa-search"></i> Search
       </button>
-    </div>
-
+      <!-- Lu added id and class -->
+    <div id="recentSearches" class="recent-searches"></div>
+  </div>
     <div class="error-message" id="errorMessage">
       Please enter a valid search value.
     </div>
@@ -202,6 +230,87 @@
         resultsContainer.textContent = 'No results found';
       }
     }
+    // lu adding extra stuff here
+    let recentSearches = [];
+
+  function searchItems() 
+  {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+
+    // Update recent searches
+    if (!recentSearches.includes(query)) 
+    {
+      recentSearches.unshift(query); 
+      // Add new search to the beginning
+      if (recentSearches.length > 5) recentSearches.pop(); // Keep only the latest 5
+    }
+
+    // To hide the recent searches dropdown after searching
+    document.getElementById('recentSearches').style.display = 'none';
+
+    // Perform search
+    fetch('http://localhost:3000/students')
+      .then(response => response.json())
+      .then(data => {
+        const results = data.filter(student =>
+          student.first_name.toLowerCase().includes(query.toLowerCase()) ||
+          student.last_name.toLowerCase().includes(query.toLowerCase()) ||
+          student.degree_program.toLowerCase().includes(query.toLowerCase()) ||
+          student.degree_classification.toLowerCase().includes(query.toLowerCase()) ||
+          student.email.toLowerCase().includes(query.toLowerCase())
+        );
+
+        displayResults(results);
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  function displayResults(results) 
+  {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';
+
+    if (results.length > 0) 
+    {
+      results.forEach(student => 
+      {
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('result-item');
+        resultItem.textContent = `${student.first_name} ${student.last_name}, ${student.degree_program} (${student.degree_classification}), ${student.email}`;
+        resultsContainer.appendChild(resultItem);
+      });
+    } 
+    else 
+    {
+      resultsContainer.textContent = 'No results found';
+    }
+  }
+
+  function showRecentSearches() 
+  {
+    const recentSearchesContainer = document.getElementById('recentSearches');
+    recentSearchesContainer.innerHTML = '';
+    if (recentSearches.length > 0) 
+    {
+      recentSearches.forEach(search => 
+      {
+        const searchItem = document.createElement('div');
+        searchItem.textContent = search;
+        searchItem.onclick = () => 
+        {
+          document.getElementById('searchInput').value = search;
+          recentSearchesContainer.style.display = 'none';
+        };
+        recentSearchesContainer.appendChild(searchItem);
+      });
+      recentSearchesContainer.style.display = 'block';
+    } 
+    else 
+    {
+      recentSearchesContainer.style.display = 'none';
+    }
+  }
   </script>
 </body>
 </html>
