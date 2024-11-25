@@ -133,7 +133,7 @@
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
-    max-height: 100px;
+    max-height: 150px;
     overflow-y: auto;
     z-index: 1000;
     }
@@ -157,12 +157,11 @@
       <button class="icon-button" onclick="addItem()">
         <i class="fas fa-plus"></i> Add Student
       </button>
-      <!-- Lu added an onfocus down there -->
-      <input type="text" id="searchInput" placeholder="Search by name, program, or email" onfocus="showRecentSearches()">
+      <!-- Lu added an onfocus down there and edited again for alpahbetical -->
+      <input type="text" id="searchInput" placeholder="Search by name or email" onfocus="showRecentSearchesOrAlphabetical()" oninput="filterDropdown()">
       <button class="icon-button" onclick="searchItems()">
         <i class="fas fa-search"></i> Search
       </button>
-      <!-- Lu added id and class -->
     <div id="recentSearches" class="recent-searches"></div>
   </div>
     <div class="error-message" id="errorMessage">
@@ -230,10 +229,98 @@
         resultsContainer.textContent = 'No results found';
       }
     }
-    // lu adding extra stuff here
+    // lu adding extra stuff here - also edited for alphabetical
     let recentSearches = [];
+    let allStudents = [] // Store all students
 
-  function searchItems() 
+    // Fetch all students on page load
+    window.onload = function () 
+    {
+      fetch('http://localhost:3000/students')
+        .then((response) => response.json())
+        .then((data) => {
+          allStudents = data.sort((a, b) =>
+            a.first_name.localeCompare(b.first_name)
+          );
+        })
+        .catch((error) => console.error('Error fetching students:', error));
+    };
+
+    // Show recent searches or alphabetical list
+    function showRecentSearchesOrAlphabetical() 
+    {
+      const recentSearchesContainer = document.getElementById('recentSearches');
+      recentSearchesContainer.innerHTML = '';
+
+      if (recentSearches.length > 0) 
+      {
+        // Show recent searches
+        recentSearches.forEach((search) => 
+        {
+          const searchItem = document.createElement('div');
+          searchItem.textContent = search;
+          searchItem.onclick = () => 
+          {
+            document.getElementById('searchInput').value = search;
+            recentSearchesContainer.style.display = 'none';
+            searchItems(); // Trigger search
+          };
+          recentSearchesContainer.appendChild(searchItem);
+        });
+      } else if (allStudents.length > 0) 
+      {
+        // Show the first 10 alphabetically sorted names
+        allStudents.slice(0, 10).forEach((student) => 
+        {
+          const searchItem = document.createElement('div');
+          searchItem.textContent = `${student.first_name} ${student.last_name}`;
+          searchItem.onclick = () => 
+          {
+            document.getElementById('searchInput').value = `${student.first_name} ${student.last_name}`;
+            recentSearchesContainer.style.display = 'none';
+            searchItems(); // Trigger search
+          };
+          recentSearchesContainer.appendChild(searchItem);
+        });
+      }
+
+      recentSearchesContainer.style.display = 'block';
+    }
+
+    // Filter the dropdown while typing
+    function filterDropdown() 
+    {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const recentSearchesContainer = document.getElementById('recentSearches');
+      recentSearchesContainer.innerHTML = '';
+
+      if (query && allStudents.length > 0) 
+      {
+        const filteredStudents = allStudents.filter((student) =>
+          student.first_name.toLowerCase().startsWith(query)
+        );
+
+        filteredStudents.slice(0, 10).forEach((student) => 
+        {
+          const searchItem = document.createElement('div');
+          searchItem.textContent = `${student.first_name} ${student.last_name}`;
+          searchItem.onclick = () =>
+          {
+            document.getElementById('searchInput').value = `${student.first_name} ${student.last_name}`;
+            recentSearchesContainer.style.display = 'none';
+            searchItems(); // Trigger search
+          };
+          recentSearchesContainer.appendChild(searchItem);
+        });
+        recentSearchesContainer.style.display = 'block';
+      } else 
+      {
+        // Show default recent/alphabetical list
+        showRecentSearchesOrAlphabetical();
+      }
+    } 
+  
+    function searchItems() 
   {
     const query = document.getElementById('searchInput').value.trim();
     if (!query) return;
